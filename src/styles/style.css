@@ -1,0 +1,210 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap");
+
+@media only screen and (max-width: 640px) {
+  form {
+    flex-direction: column;
+    margin: 15px;
+  }
+
+  .todo-list {
+    margin: 15px;
+    min-width: 100%;
+  }
+}
+
+@media only screen and (min-width: 641px) {
+  .todo-list {
+    min-width: 450px;
+  }
+}
+
+html {
+  min-height: 100%;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background: rgb(36, 0, 0);
+  background: linear-gradient(
+    330deg,
+    rgba(36, 0, 0, 1) 0%,
+    rgba(121, 9, 9, 1) 43%,
+    rgba(230, 0, 0, 1) 90%
+  );
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#240000",endColorstr="#e60000",GradientType=1);
+  font-family: "Montserrat", sans-serif;
+}
+
+header {
+  color: seashell;
+}
+
+h1 {
+  font-size: 50px;
+}
+
+header,
+form {
+  min-height: 20vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+form input,
+form button {
+  border: none;
+  background: seashell;
+}
+
+form input {
+  margin: 0px;
+  padding: 15px;
+  font-size: 20px;
+}
+
+input:focus {
+  outline: none;
+}
+
+.todo-input-container {
+  display: flex;
+}
+
+form button {
+  margin: 0px;
+  padding: 9.3px 13px 9.3px 13px;
+  font-size: 30px;
+  color: rgb(194, 13, 49);
+  background: seashell;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+form button:hover {
+  background: rgb(194, 13, 49);
+  color: seashell;
+}
+
+.todo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.todo-list {
+  list-style-type: none;
+}
+
+.todo {
+  margin: 15px;
+  background: seashell;
+  font-size: 20px;
+  display: flex;
+  justify-content: space-between;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  transition: 0.5s ease;
+}
+
+.todo-item {
+  flex: 1;
+  padding-left: 15px;
+  margin: auto;
+}
+
+ul {
+  padding-inline-start: 0px;
+}
+
+.complete-btn,
+.trash-btn {
+  padding: 15px;
+  border: none;
+  cursor: pointer;
+  color: seashell;
+  transition: all 0.3s ease;
+}
+
+.complete-btn {
+  background: rgb(8, 163, 3);
+  color: seashell;
+}
+
+.trash-btn {
+  background: rgb(194, 13, 49);
+  color: seashell;
+}
+
+.complete-btn:hover {
+  color: rgb(8, 163, 3);
+  background: seashell;
+}
+
+.trash-btn:hover {
+  color: rgb(194, 13, 49);
+  background: seashell;
+}
+
+.fa-check,
+.fa-trash {
+  pointer-events: none;
+}
+
+.checked {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
+.fall {
+  transform: translateY(200px) rotateZ(20deg);
+  opacity: 0;
+}
+
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  outline: none;
+  border: none;
+
+  color: rgb(194, 13, 49);
+  font-size: 20px;
+  background-color: seashell;
+  min-width: 250px;
+  padding: 15.5px;
+}
+
+.select {
+  margin: 15px;
+  position: relative;
+  overflow: hidden;
+  min-width: 250px;
+}
+
+.select::after {
+  content: "\25BC";
+  position: absolute;
+  background: rgb(194, 13, 49);
+  color: seashell;
+  top: 0;
+  right: 0;
+  font-size: 20px;
+  padding: 15.5px;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+select:focus {
+  outline: none;
+}
+
+.select:hover::after {
+  background: seashell;
+  color: rgb(194, 13, 49);
+}
