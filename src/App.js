@@ -14,5 +14,4 @@ function App() {
 
 export default App;
 
-
 // paginacja (useEffect), sortowanie(useEffect), filtrowanie, edycja
