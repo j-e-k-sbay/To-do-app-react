@@ -13,9 +13,7 @@ function TodoList(props)
     const [inputValue, setInputValue] = useState("");
     const [idForTodo, setIdForTodo] = useState(Math.random());
     const [isEdited, setIsEdited] = useState(false);
-
     const [filteredTodos, setFilteredTodos] = useState([]);
-
     const[currentPage, setCurrentPage] = useState(1);
     const[todosPerPage,setTodosPerPage] = useState(5);
 
@@ -35,13 +33,14 @@ function TodoList(props)
 
     const handleButtonClick = () =>{
         if(!inputValue) return;
-        const todos = todoList.concat({
+        const array = todoList;
+        array.push({
             name: inputValue,
             completed: false,
             id: idForTodo
         });
 
-        setTodoList(todos);
+        setTodoList(array);
         setInputValue("");
         setIdForTodo(Math.random());
         setIsEdited(false);
@@ -55,8 +54,7 @@ function TodoList(props)
         setTodoList(todoList.map(todo => {
             if(todoId === todo.id)
             {
-                console.log(!todo.completed)
-                return{
+                return {
                     ...todo,
                     completed: !todo.completed,
                 }
@@ -69,6 +67,7 @@ function TodoList(props)
     const handleTodoEdit = (todoId) =>{
         const todos = todoList.filter(todo => todo.id !== todoId);
         const todoToEdit = todoList.find(todo => todo.id === todoId)
+
         setTodoList(todos);
         setInputValue(todoToEdit.name);
         setIdForTodo(todoToEdit.id);
@@ -82,21 +81,15 @@ function TodoList(props)
     }
 
     const filterHandler = () =>{
-        console.log('filter idzie')
-        switch(status){
+        switch(status && status.value){
             case "completed":
-                setFilteredTodos(todoList.filter(todo => todo.completed === true));
-                break;
+                return setFilteredTodos(todoList.filter(todo => todo.completed));
             case "uncompleted":
-                setFilteredTodos(todoList.filter(todo => todo.completed === false));
-                break;
+                return setFilteredTodos(todoList.filter(todo => !todo.completed));
             default:
-                setFilteredTodos(todoList);
-                break;
+                return setFilteredTodos(todoList);
         }
     }
-
-    console.log(todoList)
 
     function compareNames( a, b ) {
         if ( a.name < b.name ){
@@ -115,11 +108,7 @@ function TodoList(props)
     useEffect(()=>{
         todoList.sort(compareNames);
         filterHandler();
-        console.log('działam')
-    },[todoList, status]);
-
-    
-    
+    },[todoList, status]); 
 
     return (
         <div>
@@ -141,18 +130,13 @@ function TodoList(props)
                 {isEdited ? <FontAwesomeIcon icon={faCheck}/>:<FontAwesomeIcon icon={faPlus}/>}
                 </button>
                 <div style={{ marginLeft: 10, width: 200 }}>
-                    {/* <select onChange={getfilterValue} className="filter-todo">
-                        <option value="all">All</option>
-                        <option value="completed">Completed</option>
-                        <option value="uncompleted">Uncompleted</option>
-                    </select> */}
                     <Select options={options} value={status} onChange={getfilterValue}/>
                 </div>
             </form>
 
             <div className='todo-container'>
                 <div className ="todo-list">
-                {filteredTodos.map((todo,index) => (
+                {filteredTodos.map(todo => (
                     <Todo 
                     key={todo.id}
                     id={todo.id}
