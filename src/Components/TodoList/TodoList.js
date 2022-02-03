@@ -5,6 +5,7 @@ import { faCheck } from '@fortawesome/free-solid-svg-icons'
 
 import Todo from './Todo'
 import Pagination from './Pagination';
+import Select from 'react-select'
 
 function TodoList(props)
 {
@@ -14,7 +15,6 @@ function TodoList(props)
     const [isEdited, setIsEdited] = useState(false);
 
     const [filteredTodos, setFilteredTodos] = useState([]);
-    const [status, setStatus] = useState("all");
 
     const[currentPage, setCurrentPage] = useState(1);
     const[todosPerPage,setTodosPerPage] = useState(5);
@@ -22,10 +22,15 @@ function TodoList(props)
     const indexOfLastTodo = currentPage * todosPerPage;
     const indexOfFirstTodo = indexOfLastTodo - todosPerPage;
     const currentTodos = todoList.slice(indexOfFirstTodo,indexOfLastTodo);
+    const options = [
+        { value: 'all', label: 'All' },
+        { value: 'completed', label: 'Completed' },
+        { value: 'uncompleted', label: 'Uncompleted' }
+      ]
+      const [status, setStatus] = useState(options[0]);
 
     const handleInputChange = (event) =>{
         setInputValue(event.target.value)
-        console.log(inputValue)
     }
 
     const handleButtonClick = () =>{
@@ -72,11 +77,12 @@ function TodoList(props)
 
     
 
-    const getfilterValue = (e) =>{
-        setStatus(e.target.value);
+    const getfilterValue = (selectedOption) =>{
+        setStatus(selectedOption);
     }
 
     const filterHandler = () =>{
+        console.log('filter idzie')
         switch(status){
             case "completed":
                 setFilteredTodos(todoList.filter(todo => todo.completed === true));
@@ -89,6 +95,8 @@ function TodoList(props)
                 break;
         }
     }
+
+    console.log(todoList)
 
     function compareNames( a, b ) {
         if ( a.name < b.name ){
@@ -104,9 +112,10 @@ function TodoList(props)
         e.preventDefault();
       };
 
-      useEffect(()=>{
+    useEffect(()=>{
         todoList.sort(compareNames);
         filterHandler();
+        console.log('działam')
     },[todoList, status]);
 
     
@@ -131,12 +140,13 @@ function TodoList(props)
                 >
                 {isEdited ? <FontAwesomeIcon icon={faCheck}/>:<FontAwesomeIcon icon={faPlus}/>}
                 </button>
-                <div className='select'>
-                    <select onChange={getfilterValue} className="filter-todo">
+                <div style={{ marginLeft: 10, width: 200 }}>
+                    {/* <select onChange={getfilterValue} className="filter-todo">
                         <option value="all">All</option>
                         <option value="completed">Completed</option>
                         <option value="uncompleted">Uncompleted</option>
-                    </select>
+                    </select> */}
+                    <Select options={options} value={status} onChange={getfilterValue}/>
                 </div>
             </form>
 
