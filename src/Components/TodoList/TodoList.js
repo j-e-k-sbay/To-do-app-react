@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState } from 'react';
 
 import Todo from './Todo'
 function TodoList(props)
@@ -8,12 +8,20 @@ function TodoList(props)
 
     const [todoListState, setTodoListState] = useState({todos: [], inputValue:"", error:""});
 
+    // useEffect(() =>{
+    //     console.log(todoListState.todos);
+    //     todoListState.todos.sort((a, b) =>
+    //     a.localeCompare(b)
+    //     );
+    // },[todoListState.todos]);
+    
+
     const handleInputChange = (event) =>{
         const {value} = event.target;
         // setInputValue(value);
         setTodoListState({
             ...todoListState,
-            inputValue: value
+            inputValue: value,
         })
     }
 
@@ -21,8 +29,8 @@ function TodoList(props)
         // setTodoList([...todoList,inputValue]);
         // setInputValue("");
         const {todos} = todoListState;
-
         if(!inputValue) return;
+        
 
         if(todos.some(todo => todo === inputValue)){
             setTodoListState({
@@ -36,7 +44,9 @@ function TodoList(props)
 
         setTodoListState({
             error: "",
-            todos: [...todoListState.todos, inputValue],
+            todos: [...todoListState.todos, inputValue].sort((a, b) =>
+            a.localeCompare(b)
+            ),
             inputValue: ""
         })
     }
@@ -47,6 +57,22 @@ function TodoList(props)
             todos: todos.filter(todo => todo !== todoValue)
         })
     }
+
+    const handleTodoComplete = (todoValue) =>{
+        const {todos} = todoListState;
+        console.log(todoValue.completed);
+        if(todos.some(todo => todo === todoValue)){
+            
+            setTodoListState({
+                ...todoListState,
+                completed: true,
+            });
+
+            return;
+        }
+    }
+        
+    
 
     const { error, todos, inputValue } = todoListState;
 
@@ -73,6 +99,13 @@ function TodoList(props)
                 >
                 +
                 </button>
+                <div className='select'>
+                    <select className="filter-todo">
+                        <option value="all">All</option>
+                        <option value="completed">Completed</option>
+                        <option value="uncompleted">Uncompleted</option>
+                    </select>
+                </div>
             </form>
 
             {!!error &&
@@ -82,17 +115,23 @@ function TodoList(props)
             }
             <div className='todo-container'>
                 <div className ="todo-list">
-                {todos.map((todo) => (
+                {todos.map((todo,index) => (
                     <Todo 
-                    key={todo}
+                    key={index}
                     todo={todo}
+                    completed={false}
+                    handleCompleteClick={handleTodoComplete}  
                     handleCloseClick={handleTodoRemove}  
                     />
                 ))}
                 </div>
             
             </div>
-            
+            {/* <div>
+                <button>
+
+                </button>
+            </div> */}
         </div>
     );
 }
