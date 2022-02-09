@@ -14,12 +14,13 @@ function TodoList(props)
     const [idForTodo, setIdForTodo] = useState(Math.random());
     const [isEdited, setIsEdited] = useState(false);
     const [filteredTodos, setFilteredTodos] = useState([]);
-    const[currentPage, setCurrentPage] = useState(1);
-    const[todosPerPage,setTodosPerPage] = useState(5);
+    const [currentPage, setCurrentPage] = useState(1);
+    const todosPerPage = 5;
 
-    const indexOfLastTodo = currentPage * todosPerPage;
-    const indexOfFirstTodo = indexOfLastTodo - todosPerPage;
-    const currentTodos = todoList.slice(indexOfFirstTodo,indexOfLastTodo);
+    const indexOfLastItem = currentPage * todosPerPage;
+    const indexOfFirstItem = indexOfLastItem - todosPerPage;
+    const currentItems = filteredTodos.slice(indexOfFirstItem, indexOfLastItem);
+
     const options = [
         { value: 'all', label: 'All' },
         { value: 'completed', label: 'Completed' },
@@ -105,6 +106,8 @@ function TodoList(props)
         e.preventDefault();
       };
 
+    const paginate = pageNumber => setCurrentPage(pageNumber);
+
     useEffect(()=>{
         todoList.sort(compareNames);
         filterHandler();
@@ -136,7 +139,7 @@ function TodoList(props)
 
             <div className='todo-container'>
                 <div className ="todo-list">
-                {filteredTodos.map(todo => (
+                {currentItems.map(todo => (
                     <Todo 
                     key={todo.id}
                     id={todo.id}
@@ -148,7 +151,7 @@ function TodoList(props)
                 ))}
                 </div>
             </div>
-            <Pagination todosPerPage={todosPerPage} totalTodos={todoList.length}/>
+            <Pagination todosPerPage={todosPerPage} totalTodos={filteredTodos.length} paginate={paginate} currentPage={currentPage}/>
         </div>
     );
 }
