@@ -2,6 +2,7 @@ import React, {useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
+import { faCaretDown } from '@fortawesome/free-solid-svg-icons'
 
 import Todo from './Todo'
 import Pagination from './Pagination';
@@ -14,6 +15,7 @@ function TodoList(props)
     const [idForTodo, setIdForTodo] = useState(Math.random());
     const [isEdited, setIsEdited] = useState(false);
     const [filteredTodos, setFilteredTodos] = useState([]);
+    
     const [currentPage, setCurrentPage] = useState(1);
     const todosPerPage = 5;
 
@@ -26,7 +28,39 @@ function TodoList(props)
         { value: 'completed', label: 'Completed' },
         { value: 'uncompleted', label: 'Uncompleted' }
       ]
-      const [status, setStatus] = useState(options[0]);
+    const [status, setStatus] = useState(options[0]);
+
+    const customStyles = {
+        control: () => ({
+            display: "flex",
+            minWidth: "215px",
+            fontSize:"20px",
+            padding:"0px 0px 0px 5px",
+            marginLeft:"30px",
+            backgroundColor: "seashell",
+            outline: "none",
+            border: "none",
+            cursor: "pointer",
+          }),
+        
+          menu: (provided, state) => ({
+            ...provided,
+            minWidth: "218px",
+            marginLeft:"30px",
+            marginTop: "0px",
+            borderRadius: "0px",
+            width: "200px",
+          }),
+
+          option: (provided, state) => ({
+            ...provided,
+            backgroundColor: state.isSelected ? "rgb(194, 13, 49)" : "seashell",
+            color: "black",
+            "&:hover": {
+                backgroundColor: "rgb(243, 98, 127)"
+              },
+          })
+      }
 
     const handleInputChange = (event) =>{
         setInputValue(event.target.value)
@@ -42,13 +76,15 @@ function TodoList(props)
         });
 
         setTodoList(array);
+        todoList.sort(compareNames);
         setInputValue("");
         setIdForTodo(Math.random());
         setIsEdited(false);
     }
 
     const handleTodoRemove = (todoValue) =>{
-        setTodoList(todoList.filter(todo => todo.name !== todoValue))
+        setTodoList(todoList.filter(todo => todo.name !== todoValue));
+        if((filteredTodos.length-1)/todosPerPage === currentPage-1) setCurrentPage(currentPage-1);
     }
 
     const handleTodoComplete = (todoId) =>{
@@ -82,7 +118,7 @@ function TodoList(props)
     }
 
     const filterHandler = () =>{
-        switch(status && status.value){
+        switch(status.value){
             case "completed":
                 return setFilteredTodos(todoList.filter(todo => todo.completed));
             case "uncompleted":
@@ -113,6 +149,10 @@ function TodoList(props)
         filterHandler();
     },[todoList, status]); 
 
+    useEffect(()=>{
+        setCurrentPage(1);
+    },[status])
+
     return (
         <div>
             <header>
@@ -132,8 +172,13 @@ function TodoList(props)
                 >
                 {isEdited ? <FontAwesomeIcon icon={faCheck}/>:<FontAwesomeIcon icon={faPlus}/>}
                 </button>
-                <div style={{ marginLeft: 10, width: 200 }}>
-                    <Select options={options} value={status} onChange={getfilterValue}/>
+                <div>
+                    <Select 
+                    isSearchable={false} styles={customStyles} 
+                    components={{ DropdownIndicator:() => <div className='select-icon'><FontAwesomeIcon icon={faCaretDown}/></div>, IndicatorSeparator:() => null }}
+                     options={options} 
+                     value={status} 
+                     onChange={getfilterValue}/>
                 </div>
             </form>
 
@@ -151,7 +196,9 @@ function TodoList(props)
                 ))}
                 </div>
             </div>
-            <Pagination todosPerPage={todosPerPage} totalTodos={filteredTodos.length} paginate={paginate} currentPage={currentPage}/>
+            <div className="pagination-container">
+               <Pagination todosPerPage={todosPerPage} totalTodos={filteredTodos.length} paginate={paginate} currentPage={currentPage}/>
+            </div>
         </div>
     );
 }
