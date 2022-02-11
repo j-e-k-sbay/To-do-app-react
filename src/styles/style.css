@@ -75,18 +75,29 @@ input:focus {
 }
 
 form button {
-  margin: 0px;
-  padding: 9.3px 13px 9.3px 13px;
-  font-size: 30px;
-  color: rgb(194, 13, 49);
-  background: seashell;
+  padding: 15px;
+  width: 50px;
+  font-size: 20px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-form button:hover {
+.todo-button {
+  color: rgb(194, 13, 49);
+}
+.todo-button:hover {
   background: rgb(194, 13, 49);
   color: seashell;
+}
+
+.todo-edit-button {
+  background: rgb(8, 163, 3);
+  color: seashell;
+}
+
+.todo-edit-button:hover {
+  background: seashell;
+  color: rgb(8, 163, 3);
 }
 
 .todo-container {
@@ -123,7 +134,8 @@ ul {
 }
 
 .complete-btn,
-.trash-btn {
+.trash-btn,
+.edit-btn {
   padding: 15px;
   border: none;
   cursor: pointer;
@@ -141,6 +153,11 @@ ul {
   color: seashell;
 }
 
+.edit-btn {
+  background: rgb(231, 211, 33);
+  color: seashell;
+}
+
 .complete-btn:hover {
   color: rgb(8, 163, 3);
   background: seashell;
@@ -148,6 +165,11 @@ ul {
 
 .trash-btn:hover {
   color: rgb(194, 13, 49);
+  background: seashell;
+}
+
+.edit-btn:hover {
+  color: rgb(231, 211, 33);
   background: seashell;
 }
 
@@ -207,4 +229,10 @@ select:focus {
 .select:hover::after {
   background: seashell;
   color: rgb(194, 13, 49);
+}
+
+li {
+  width: 50px;
+  height: 50px;
+  background-color: green;
 }

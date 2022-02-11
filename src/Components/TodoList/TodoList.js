@@ -1,84 +1,116 @@
 import React, {useEffect, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faCheck } from '@fortawesome/free-solid-svg-icons'
 
 import Todo from './Todo'
+import Pagination from './Pagination';
+
 function TodoList(props)
 {
-    // const [todoList, setTodoList] = useState([]);
-    // const [inputValue, setInputValue] = useState("");
+    const [todoList, setTodoList] = useState([]);
+    const [inputValue, setInputValue] = useState("");
+    const [idForTodo, setIdForTodo] = useState(Math.random());
+    const [isEdited, setIsEdited] = useState(false);
 
-    const [todoListState, setTodoListState] = useState({todos: [], inputValue:"", error:""});
+    const [filteredTodos, setFilteredTodos] = useState([]);
+    const [status, setStatus] = useState("all");
 
-    // useEffect(() =>{
-    //     console.log(todoListState.todos);
-    //     todoListState.todos.sort((a, b) =>
-    //     a.localeCompare(b)
-    //     );
-    // },[todoListState.todos]);
-    
+    const[currentPage, setCurrentPage] = useState(1);
+    const[todosPerPage,setTodosPerPage] = useState(5);
+
+    const indexOfLastTodo = currentPage * todosPerPage;
+    const indexOfFirstTodo = indexOfLastTodo - todosPerPage;
+    const currentTodos = todoList.slice(indexOfFirstTodo,indexOfLastTodo);
 
     const handleInputChange = (event) =>{
-        const {value} = event.target;
-        // setInputValue(value);
-        setTodoListState({
-            ...todoListState,
-            inputValue: value,
-        })
+        setInputValue(event.target.value)
+        console.log(inputValue)
     }
 
     const handleButtonClick = () =>{
-        // setTodoList([...todoList,inputValue]);
-        // setInputValue("");
-        const {todos} = todoListState;
         if(!inputValue) return;
-        
+        const todos = todoList.concat({
+            name: inputValue,
+            completed: false,
+            id: idForTodo
+        });
 
-        if(todos.some(todo => todo === inputValue)){
-            setTodoListState({
-                ...todoListState,
-                error:"To zadanie juz istnieje",
-                inputValue: "",
-            });
-
-            return;
-        }
-
-        setTodoListState({
-            error: "",
-            todos: [...todoListState.todos, inputValue].sort((a, b) =>
-            a.localeCompare(b)
-            ),
-            inputValue: ""
-        })
+        setTodoList(todos);
+        setInputValue("");
+        setIdForTodo(Math.random());
+        setIsEdited(false);
     }
 
     const handleTodoRemove = (todoValue) =>{
-        setTodoListState({
-            ...todoListState,
-            todos: todos.filter(todo => todo !== todoValue)
-        })
+        setTodoList(todoList.filter(todo => todo.name !== todoValue))
     }
 
-    const handleTodoComplete = (todoValue) =>{
-        const {todos} = todoListState;
-        console.log(todoValue.completed);
-        if(todos.some(todo => todo === todoValue)){
-            
-            setTodoListState({
-                ...todoListState,
-                completed: true,
-            });
-
-            return;
-        }
+    const handleTodoComplete = (todoId) =>{
+        setTodoList(todoList.map(todo => {
+            if(todoId === todo.id)
+            {
+                console.log(!todo.completed)
+                return{
+                    ...todo,
+                    completed: !todo.completed,
+                }
+            }
+            return todo;
+            })    
+        );
     }
-        
+
+    const handleTodoEdit = (todoId) =>{
+        const todos = todoList.filter(todo => todo.id !== todoId);
+        const todoToEdit = todoList.find(todo => todo.id === todoId)
+        setTodoList(todos);
+        setInputValue(todoToEdit.name);
+        setIdForTodo(todoToEdit.id);
+        setIsEdited(true);
+    }
+
     
 
-    const { error, todos, inputValue } = todoListState;
+    const getfilterValue = (e) =>{
+        setStatus(e.target.value);
+    }
+
+    const filterHandler = () =>{
+        switch(status){
+            case "completed":
+                setFilteredTodos(todoList.filter(todo => todo.completed === true));
+                break;
+            case "uncompleted":
+                setFilteredTodos(todoList.filter(todo => todo.completed === false));
+                break;
+            default:
+                setFilteredTodos(todoList);
+                break;
+        }
+    }
+
+    function compareNames( a, b ) {
+        if ( a.name < b.name ){
+          return -1;
+        }
+        if ( a.name > b.name ){
+          return 1;
+        }
+        return 0;
+      }
 
     const onSubmit = (e) => {
         e.preventDefault();
       };
+
+      useEffect(()=>{
+        todoList.sort(compareNames);
+        filterHandler();
+    },[todoList, status]);
+
+    
+    
 
     return (
         <div>
@@ -94,13 +126,13 @@ function TodoList(props)
                     onChange={handleInputChange}
                 />
                 <button 
-                    className="todo-button"
+                    className={isEdited ? "todo-edit-button":"todo-button"}
                     onClick={handleButtonClick}
                 >
-                +
+                {isEdited ? <FontAwesomeIcon icon={faCheck}/>:<FontAwesomeIcon icon={faPlus}/>}
                 </button>
                 <div className='select'>
-                    <select className="filter-todo">
+                    <select onChange={getfilterValue} className="filter-todo">
                         <option value="all">All</option>
                         <option value="completed">Completed</option>
                         <option value="uncompleted">Uncompleted</option>
@@ -108,30 +140,21 @@ function TodoList(props)
                 </div>
             </form>
 
-            {!!error &&
-                <p>
-                    {error}
-                </p>
-            }
             <div className='todo-container'>
                 <div className ="todo-list">
-                {todos.map((todo,index) => (
+                {filteredTodos.map((todo,index) => (
                     <Todo 
-                    key={index}
-                    todo={todo}
-                    completed={false}
+                    key={todo.id}
+                    id={todo.id}
+                    todo={todo.name}
+                    completed={todo.completed}
+                    handleEditClick={handleTodoEdit}
                     handleCompleteClick={handleTodoComplete}  
-                    handleCloseClick={handleTodoRemove}  
-                    />
+                    handleCloseClick={handleTodoRemove}  />
                 ))}
                 </div>
-            
             </div>
-            {/* <div>
-                <button>
-
-                </button>
-            </div> */}
+            <Pagination todosPerPage={todosPerPage} totalTodos={todoList.length}/>
         </div>
     );
 }
