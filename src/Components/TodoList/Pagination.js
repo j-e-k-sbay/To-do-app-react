@@ -1,18 +1,21 @@
 import React from "react";
 
 const Pagination = ({ todosPerPage, totalTodos, paginate, currentPage }) =>{
-    const pageNumbers = [];
+    const pageNumbers = [1];
 
     for (let i = 1; i <= Math.ceil(totalTodos / todosPerPage); i++) {
-      pageNumbers.push(i);
+        if(i!==1) pageNumbers.push(i);
     }
   
     const nextPage = () => {
-      paginate(currentPage + 1);
+        if(currentPage!==pageNumbers.length) {paginate(currentPage+1);}
     };
   
     const prevPage = () => {
-      paginate(currentPage - 1);
+        if(currentPage!==1)
+        {
+            paginate(currentPage-1);
+        }
     };
 
     const compactPaginationPages = [
@@ -31,16 +34,22 @@ const Pagination = ({ todosPerPage, totalTodos, paginate, currentPage }) =>{
         <>
         {pageNumbers.length && (
             <>
-                        <button 
-                onClick={ev => {
-                ev.preventDefault();
-                prevPage();
-            }}>
-                Prev
-            </button>
-            {compactPaginationPages.map(item => {
+            <div className="pagination-btn-container">
+                <button 
+                    className={currentPage===1 ? "pagination-btn-disabled ":"pagination-btn"}
+                    onClick={ev => {
+                    ev.preventDefault();
+                    prevPage();
+                 }}>
+                 Prev
+                </button>
+            </div>
+            
+            {compactPaginationPages.map((item,index) => {
                 return (
+                    <div className="pagination-btn-container">
                     <button
+                        className={index===currentPage-1 ? "pagination-btn-selected" : "pagination-btn"}
                         key={item}
                         onClick={ev => {
                             ev.preventDefault();
@@ -49,15 +58,21 @@ const Pagination = ({ todosPerPage, totalTodos, paginate, currentPage }) =>{
                         >
                         {item}
                     </button>
+                    </div>
                 );
             })}
+            <div className="pagination-btn-container">
             <button 
+                
+                className={currentPage===pageNumbers.length ? "pagination-btn-disabled ":"pagination-btn"}
                 onClick={ev => {
                 ev.preventDefault();
                 nextPage();
             }}>
                 Next
             </button>
+            
+            </div>
             </>
         )}
         </>
