@@ -5,6 +5,7 @@ import { faCheck } from '@fortawesome/free-solid-svg-icons'
 
 import Todo from './Todo'
 import Pagination from './Pagination';
+import Select from 'react-select'
 
 function TodoList(props)
 {
@@ -12,31 +13,35 @@ function TodoList(props)
     const [inputValue, setInputValue] = useState("");
     const [idForTodo, setIdForTodo] = useState(Math.random());
     const [isEdited, setIsEdited] = useState(false);
-
     const [filteredTodos, setFilteredTodos] = useState([]);
-    const [status, setStatus] = useState("all");
+    const [currentPage, setCurrentPage] = useState(1);
+    const todosPerPage = 5;
 
-    const[currentPage, setCurrentPage] = useState(1);
-    const[todosPerPage,setTodosPerPage] = useState(5);
+    const indexOfLastItem = currentPage * todosPerPage;
+    const indexOfFirstItem = indexOfLastItem - todosPerPage;
+    const currentItems = filteredTodos.slice(indexOfFirstItem, indexOfLastItem);
 
-    const indexOfLastTodo = currentPage * todosPerPage;
-    const indexOfFirstTodo = indexOfLastTodo - todosPerPage;
-    const currentTodos = todoList.slice(indexOfFirstTodo,indexOfLastTodo);
+    const options = [
+        { value: 'all', label: 'All' },
+        { value: 'completed', label: 'Completed' },
+        { value: 'uncompleted', label: 'Uncompleted' }
+      ]
+      const [status, setStatus] = useState(options[0]);
 
     const handleInputChange = (event) =>{
         setInputValue(event.target.value)
-        console.log(inputValue)
     }
 
     const handleButtonClick = () =>{
         if(!inputValue) return;
-        const todos = todoList.concat({
+        const array = todoList;
+        array.push({
             name: inputValue,
             completed: false,
             id: idForTodo
         });
 
-        setTodoList(todos);
+        setTodoList(array);
         setInputValue("");
         setIdForTodo(Math.random());
         setIsEdited(false);
@@ -50,8 +55,7 @@ function TodoList(props)
         setTodoList(todoList.map(todo => {
             if(todoId === todo.id)
             {
-                console.log(!todo.completed)
-                return{
+                return {
                     ...todo,
                     completed: !todo.completed,
                 }
@@ -64,6 +68,7 @@ function TodoList(props)
     const handleTodoEdit = (todoId) =>{
         const todos = todoList.filter(todo => todo.id !== todoId);
         const todoToEdit = todoList.find(todo => todo.id === todoId)
+
         setTodoList(todos);
         setInputValue(todoToEdit.name);
         setIdForTodo(todoToEdit.id);
@@ -72,21 +77,18 @@ function TodoList(props)
 
     
 
-    const getfilterValue = (e) =>{
-        setStatus(e.target.value);
+    const getfilterValue = (selectedOption) =>{
+        setStatus(selectedOption);
     }
 
     const filterHandler = () =>{
-        switch(status){
+        switch(status && status.value){
             case "completed":
-                setFilteredTodos(todoList.filter(todo => todo.completed === true));
-                break;
+                return setFilteredTodos(todoList.filter(todo => todo.completed));
             case "uncompleted":
-                setFilteredTodos(todoList.filter(todo => todo.completed === false));
-                break;
+                return setFilteredTodos(todoList.filter(todo => !todo.completed));
             default:
-                setFilteredTodos(todoList);
-                break;
+                return setFilteredTodos(todoList);
         }
     }
 
@@ -104,13 +106,12 @@ function TodoList(props)
         e.preventDefault();
       };
 
-      useEffect(()=>{
+    const paginate = pageNumber => setCurrentPage(pageNumber);
+
+    useEffect(()=>{
         todoList.sort(compareNames);
         filterHandler();
-    },[todoList, status]);
-
-    
-    
+    },[todoList, status]); 
 
     return (
         <div>
@@ -131,18 +132,14 @@ function TodoList(props)
                 >
                 {isEdited ? <FontAwesomeIcon icon={faCheck}/>:<FontAwesomeIcon icon={faPlus}/>}
                 </button>
-                <div className='select'>
-                    <select onChange={getfilterValue} className="filter-todo">
-                        <option value="all">All</option>
-                        <option value="completed">Completed</option>
-                        <option value="uncompleted">Uncompleted</option>
-                    </select>
+                <div style={{ marginLeft: 10, width: 200 }}>
+                    <Select options={options} value={status} onChange={getfilterValue}/>
                 </div>
             </form>
 
             <div className='todo-container'>
                 <div className ="todo-list">
-                {filteredTodos.map((todo,index) => (
+                {currentItems.map(todo => (
                     <Todo 
                     key={todo.id}
                     id={todo.id}
@@ -154,7 +151,7 @@ function TodoList(props)
                 ))}
                 </div>
             </div>
-            <Pagination todosPerPage={todosPerPage} totalTodos={todoList.length}/>
+            <Pagination todosPerPage={todosPerPage} totalTodos={filteredTodos.length} paginate={paginate} currentPage={currentPage}/>
         </div>
     );
 }

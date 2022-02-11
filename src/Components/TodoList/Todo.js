@@ -1,15 +1,11 @@
-import React, {useEffect,useState} from "react";
+import React from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrash } from '@fortawesome/free-solid-svg-icons'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import { faPen } from '@fortawesome/free-solid-svg-icons'
 
-function Todo({todo,id,completed,handleEditClick,handleCloseClick,handleCompleteClick})
+function Todo({ todo, id, completed, handleEditClick, handleCloseClick, handleCompleteClick })
 {
-    useEffect(() =>{
-        console.log(completed);
-    },[completed]);
-
     return(
         <div className={completed ? "todo checked":"todo"}>
             <span className="todo-item">{todo}</span>
